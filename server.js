@@ -33,6 +33,10 @@ const swaggerOptions = {
       version: "1.0.0",
       description:
         "Backend de Appartex, une application de gestion pour propriétaires indépendants",
+      contact: {
+        name: "Kesigan Thavarajasingam",
+        email: "kesigan.thav@gmail.com",
+      },
     },
   },
 
