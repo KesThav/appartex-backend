@@ -71,20 +71,30 @@ const swaggerUi = koaSwagger({
 });
 
 const disabledPrefixes = [
-  "appartments",
-  "buildings",
-  "history",
-  "tenants",
-  "contracts",
-  "bills",
-  "status",
-  "messages",
-  "tasks",
-  "repairs",
+  "/appartments",
+  "/buildings",
+  "/history",
+  "/tenants",
+  "/contracts",
+  "/bills",
+  "/status",
+  "/messages",
+  "/tasks",
+  "/repairs",
 ];
 
 const port = process.env.PORT || 5000;
 app
+  .use((ctx, next) => {
+    if (disabledPrefixes.some((prefix) => ctx.path.startsWith(prefix))) {
+      if (["POST", "PUT", "DELETE"].includes(ctx.method)) {
+        ctx.status = 403;
+        ctx.body = { message: "Method disabled" };
+        return;
+      }
+    }
+    return next();
+  })
   .use(swagger)
   .use(swaggerUi)
   .use(cors())
@@ -92,12 +102,4 @@ app
   .use(json())
   .use(router())
   .use(serve("./public"))
-  .use((req, res, next) => {
-    if (disabledPrefixes.some((prefix) => req.path.includes(prefix))) {
-      if (["POST", "PUT", "DELETE"].includes(req.method)) {
-        return res.status(403).json({ message: "Method disabled" });
-      }
-    }
-    next();
-  })
   .listen(port, () => console.log(`listen on port ${port}`));
